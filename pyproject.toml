@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "taxfolio"
-version = "0.1.0a0"
+version = "0.2.0"
 description = "Tax-aware portfolio optimization for Python, backed by C++20"
 readme = "README.md"
 license = "AGPL-3.0-only"
