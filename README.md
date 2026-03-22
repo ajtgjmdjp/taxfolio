@@ -71,7 +71,9 @@ cd taxfolio
 uv venv && uv pip install pybind11 numpy yfinance pandas
 
 PYBIND11_DIR=$(uv run --no-project python -c "import pybind11; print(pybind11.get_cmake_dir())")
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON -Dpybind11_DIR="$PYBIND11_DIR"
+PYTHON_EXE=$(pwd)/.venv/bin/python
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON \
+  -Dpybind11_DIR="$PYBIND11_DIR" -DPYTHON_EXECUTABLE="$PYTHON_EXE"
 cmake --build build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 
 # Try it
