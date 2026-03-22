@@ -111,6 +111,14 @@ def _fetch_covariance(
             close = data
 
         available = [t for t in asset_ids if t in close.columns and close[t].notna().sum() > 20]
+        missing = [t for t in asset_ids if t not in available]
+        if missing:
+            import warnings
+            warnings.warn(
+                f"Covariance: no data for {', '.join(missing)}. "
+                "Using 20% vol diagonal for these assets.",
+                stacklevel=3,
+            )
         close = close[available].ffill().dropna()
         daily_ret = close.pct_change().dropna()
 
@@ -280,11 +288,20 @@ def run_optimization(
         prices = _fetch_prices(asset_ids)
 
     price_vec = np.zeros(n, dtype=np.float64)
+    fallback_tickers = []
     for i, aid in enumerate(asset_ids):
         if aid in prices:
             price_vec[i] = prices[aid]
         else:
-            price_vec[i] = _avg_cost(holdings, aid)  # fallback to cost basis
+            price_vec[i] = _avg_cost(holdings, aid)
+            fallback_tickers.append(aid)
+    if fallback_tickers:
+        import warnings
+        warnings.warn(
+            f"Using cost basis as price for: {', '.join(fallback_tickers)}. "
+            "Pass prices= for accurate results.",
+            stacklevel=2,
+        )
 
     # -- Tax lots ----------------------------------------------------------
     lots = []

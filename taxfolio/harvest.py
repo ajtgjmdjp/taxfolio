@@ -102,9 +102,11 @@ def _compute_correlations_batch(
                 _CORR_CACHE[cache_key] = corr
                 results[c] = corr
             else:
+                # Don't cache failures — ticker might become available later
                 results[c] = 0.0
-    except Exception:
-        pass
+    except Exception as e:
+        import warnings
+        warnings.warn(f"Correlation fetch failed: {e}", stacklevel=2)
 
     return results
 
