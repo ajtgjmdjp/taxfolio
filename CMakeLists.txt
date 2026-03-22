@@ -27,6 +27,11 @@ add_library(taxfolio_core STATIC ${CORE_SOURCES})
 target_include_directories(taxfolio_core PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(taxfolio_core PUBLIC Eigen3::Eigen osqp::osqp)
 
+# Linux needs explicit stdc++ linkage for std::variant across shared libraries
+if(UNIX AND NOT APPLE)
+    target_link_libraries(taxfolio_core PUBLIC stdc++)
+endif()
+
 # Python bindings
 option(TAXFOLIO_BUILD_PYTHON "Build Python bindings" OFF)
 if(TAXFOLIO_BUILD_PYTHON)

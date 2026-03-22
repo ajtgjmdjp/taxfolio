@@ -57,14 +57,16 @@ jobs:
       - name: Build with Python bindings
         run: |
           PYBIND11_DIR=$(uv run --no-project python -c "import pybind11; print(pybind11.get_cmake_dir())")
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON -DTAXFOLIO_BUILD_TESTS=OFF -Dpybind11_DIR="$PYBIND11_DIR"
+          PYTHON_EXE=$(pwd)/.venv/bin/python
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON -DTAXFOLIO_BUILD_TESTS=OFF \
+            -Dpybind11_DIR="$PYBIND11_DIR" -DPYTHON_EXECUTABLE="$PYTHON_EXE" -Wno-dev
           cmake --build build
 
       - name: Lint
-        run: uv run ruff check taxfolio/
+        run: uv run --no-project ruff check taxfolio/
 
       - name: Run Python tests
-        run: PYTHONPATH=. uv run pytest tests/python/ -v
+        run: PYTHONPATH=. uv run --no-project pytest tests/python/ -v
 
   security:
     runs-on: ubuntu-latest
