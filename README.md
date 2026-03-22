@@ -86,6 +86,24 @@ harvest = portfolio.harvest_losses(min_loss=500, max_positions=5)
 harvest.summary()
 ```
 
+### Import from Broker
+
+```python
+import taxfolio as tf
+
+# Schwab
+portfolio = tf.from_schwab("schwab_positions.csv", cash=10000)
+
+# Fidelity
+portfolio = tf.from_fidelity("fidelity_positions.csv")
+
+# Interactive Brokers
+portfolio = tf.from_ibkr("ibkr_activity.csv")
+
+# Or any CSV with flexible column names
+portfolio = tf.Portfolio.from_csv("my_holdings.csv", cash=5000)
+```
+
 ### Tax-Aware Rebalancing (advanced)
 
 If you have cash to deploy or want to rebalance toward target weights:

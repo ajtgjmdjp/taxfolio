@@ -16,6 +16,7 @@ __version__ = "0.1.0a0"
 from .holding import Holding
 from .portfolio import Portfolio
 from .harvest import HarvestResult, HarvestTrade
+from .importers import from_schwab, from_fidelity, from_ibkr
 from .result import LotDispositionRecord, OptimizationResult, TradeRecord
 
 __all__ = [
@@ -26,5 +27,8 @@ __all__ = [
     "OptimizationResult",
     "Portfolio",
     "TradeRecord",
+    "from_schwab",
+    "from_fidelity",
+    "from_ibkr",
     "__version__",
 ]
