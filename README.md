@@ -61,20 +61,14 @@ Existing portfolio optimization libraries ignore taxes. In practice, taxes are t
 ## Install
 
 ```bash
-# Prerequisites
+# Prerequisites (system libraries)
 brew install cmake eigen osqp  # macOS
 # sudo apt-get install cmake libeigen3-dev  # Ubuntu + build OSQP from source
 
-# Clone and build
+# Install
 git clone https://github.com/ajtgjmdjp/taxfolio.git
 cd taxfolio
-uv venv && uv pip install pybind11 numpy yfinance pandas
-
-PYBIND11_DIR=$(uv run --no-project python -c "import pybind11; print(pybind11.get_cmake_dir())")
-PYTHON_EXE=$(pwd)/.venv/bin/python
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON \
-  -Dpybind11_DIR="$PYBIND11_DIR" -DPYTHON_EXECUTABLE="$PYTHON_EXE"
-cmake --build build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+uv venv && uv pip install .
 
 # Try it
 uv run --no-project python examples/quickstart.py

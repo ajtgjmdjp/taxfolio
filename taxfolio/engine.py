@@ -20,21 +20,46 @@ _cpp: Optional[object] = None
 
 
 def _load_cpp():  # noqa: ANN202
-    """Import ``_taxfolio`` from the ``build/`` directory at the repo root."""
+    """Import ``_taxfolio`` C++ extension.
+
+    Tries in order:
+    1. Installed package (pip install .)
+    2. Development build (build/ directory)
+    """
     global _cpp
     if _cpp is not None:
         return _cpp
 
-    # Resolve: <repo>/taxfolio/engine.py -> <repo>/build
+    # Try installed package first (taxfolio/_taxfolio.so)
+    try:
+        from . import _taxfolio  # type: ignore[import-not-found]
+        _cpp = _taxfolio
+        return _cpp
+    except ImportError:
+        pass
+
+    # Try top-level import (development with PYTHONPATH)
+    try:
+        import _taxfolio  # type: ignore[import-not-found]
+        _cpp = _taxfolio
+        return _cpp
+    except ImportError:
+        pass
+
+    # Fallback: development build in build/ directory
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     build_dir = os.path.join(repo_root, "build")
-
     if build_dir not in sys.path:
         sys.path.insert(0, build_dir)
-
-    import _taxfolio  # type: ignore[import-not-found]
-
-    _cpp = _taxfolio
+    try:
+        import _taxfolio  # type: ignore[import-not-found]
+        _cpp = _taxfolio
+        return _cpp
+    except ImportError:
+        raise RuntimeError(
+            "C++ extension _taxfolio not found. "
+            "Install with: pip install . (requires cmake, eigen, osqp)"
+        )
     return _cpp
 
 

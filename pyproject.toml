@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "taxfolio"
@@ -10,7 +10,7 @@ readme = "README.md"
 license = "AGPL-3.0-only"
 requires-python = ">=3.10"
 authors = [{ name = "ajtgjmdjp" }]
-keywords = ["portfolio", "optimization", "tax", "tax-loss-harvesting", "finance", "quant", "direct-indexing"]
+keywords = ["portfolio", "optimization", "tax", "tax-loss-harvesting", "finance", "quant"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Financial and Insurance Industry",
@@ -32,8 +32,9 @@ dev = ["pytest>=7", "ruff"]
 Homepage = "https://github.com/ajtgjmdjp/taxfolio"
 Repository = "https://github.com/ajtgjmdjp/taxfolio"
 
-[tool.setuptools.packages.find]
-include = ["taxfolio*"]
+[tool.scikit-build]
+cmake.args = ["-DTAXFOLIO_BUILD_TESTS=OFF"]
+wheel.packages = ["taxfolio"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]
