@@ -1,0 +1,13 @@
+build/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+*.so
+*.dylib
+.DS_Store
+.cache/
+.pytest_cache/
+.ruff_cache/
+uv.lock

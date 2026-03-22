@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cpp-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libeigen3-dev libgtest-dev
+          git clone --branch v1.0.0 --depth 1 https://github.com/osqp/osqp.git /tmp/osqp
+          cd /tmp/osqp && mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(nproc) && sudo make install
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install eigen osqp googletest cmake
+
+      - name: Build C++ core
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=OFF
+          cmake --build build
+
+      - name: Run C++ tests
+        run: ./build/tests/taxfolio_tests
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libeigen3-dev
+          git clone --branch v1.0.0 --depth 1 https://github.com/osqp/osqp.git /tmp/osqp
+          cd /tmp/osqp && mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(nproc) && sudo make install
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install Python deps
+        run: uv venv && uv pip install pybind11 numpy yfinance pandas pytest ruff
+
+      - name: Build with Python bindings
+        run: |
+          PYBIND11_DIR=$(uv run python -c "import pybind11; print(pybind11.get_cmake_dir())")
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DTAXFOLIO_BUILD_PYTHON=ON -DTAXFOLIO_BUILD_TESTS=OFF -Dpybind11_DIR="$PYBIND11_DIR"
+          cmake --build build
+
+      - name: Lint
+        run: uv run ruff check taxfolio/
+
+      - name: Run Python tests
+        run: PYTHONPATH=. uv run pytest tests/python/ -v
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for secrets in tracked files
+        run: |
+          if git ls-files | grep -iE '\.env$|\.pem$|\.key$|tokens'; then
+            echo "ERROR: Potential secret files found"
+            exit 1
+          fi
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

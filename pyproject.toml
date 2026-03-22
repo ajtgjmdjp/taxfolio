@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taxfolio"
+version = "0.1.0a0"
+description = "Tax-aware portfolio optimization for Python, backed by C++20"
+readme = "README.md"
+license = "AGPL-3.0-only"
+requires-python = ">=3.10"
+authors = [{ name = "ajtgjmdjp" }]
+keywords = ["portfolio", "optimization", "tax", "tax-loss-harvesting", "finance", "quant", "direct-indexing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "yfinance>=0.2",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2.0"]
+dev = ["pytest>=7", "ruff"]
+
+[project.urls]
+Homepage = "https://github.com/ajtgjmdjp/taxfolio"
+Repository = "https://github.com/ajtgjmdjp/taxfolio"
+
+[tool.setuptools.packages.find]
+include = ["taxfolio*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
