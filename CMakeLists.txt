@@ -24,6 +24,7 @@ set(CORE_SOURCES
 )
 
 add_library(taxfolio_core STATIC ${CORE_SOURCES})
+set_target_properties(taxfolio_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(taxfolio_core PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(taxfolio_core PUBLIC Eigen3::Eigen osqp::osqp)
 
