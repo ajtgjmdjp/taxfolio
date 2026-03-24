@@ -151,7 +151,7 @@ PYTHONPATH=. uv run --no-project pytest tests/ -v  # 20 Python tests
 ## Limitations
 
 - **Not tax advice.** taxfolio is a research and decision-support tool. Consult a tax professional before executing trades.
-- **Market data from Yahoo Finance.** Prices and correlations are fetched via yfinance. Data may be delayed, incomplete, or unavailable.
+- **Market data via yfinance.** Prices and correlations are fetched via the yfinance library. Data may be delayed, incomplete, or unavailable.
 - **Heuristic substitute matching.** Substitutes are selected by industry + correlation. The IRS "substantially identical" standard is vague — taxfolio does not guarantee wash sale compliance.
 - **Wash sale detection requires user input.** You must provide `recent_sells` for wash sale checks. taxfolio does not track your trade history.
 - **US and Japan only.** Other tax jurisdictions are not yet supported.
